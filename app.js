@@ -1,29 +1,29 @@
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
 }
-const express = require('express')
-const app = express()
-const port = 3001
-const { Configuration, OpenAIApi } = require('openai')
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-})
-const openai = new OpenAIApi(configuration)
 
-app.get('/', async (req, res) => {
-  try {
-    const response = await openai.createCompletion({
-      model: "text-davinci-003",
-      prompt: "who are you?",
-      temperature: 0,
-      max_tokens: 7,
-    })
-    res.status(200).json({
-      data: response.data.choices[0].text
-    })
-  } catch (err) {
-    console.log(err)
-  }
+const linebot = require('linebot');
+const { response } = require('./utils');
+const bot = linebot({
+  channelId: process.env.CHANNEL_ID,
+  channelSecret: process.env.CHANNEL_SECRET,
+  channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN
 })
 
-app.listen(port, () => console.log(`The server is listening on http://localhost${port}`))
+// 當有人傳送訊息給Bot時
+bot.on('message', async function (event) {
+  // event.message.text是使用者傳給bot的訊息
+  // 使用event.reply(要回傳的訊息)方法可將訊息回傳給使用者
+  const replyMsg = await response(event.message.text)
+  event.reply(replyMsg).then(function (data) {
+    // 當訊息成功回傳後的處理
+  }).catch(function (error) {
+    // 當訊息回傳失敗後的處理
+    console.log(error)
+  });
+});
+
+// Bot所監聽的webhook路徑與port
+bot.listen('/linewebhook', 3000, function () {
+    console.log('Bot is already!');
+});
