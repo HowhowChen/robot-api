@@ -1,7 +1,7 @@
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
 }
-
+const port = process.env.PORT || 3000
 const linebot = require('linebot');
 const { response } = require('./utils');
 const bot = linebot({
@@ -24,6 +24,6 @@ bot.on('message', async function (event) {
 });
 
 // Bot所監聽的webhook路徑與port
-bot.listen('/linewebhook', 3000, function () {
+bot.listen('/linewebhook', port, function () {
     console.log('Bot is already!');
 });
