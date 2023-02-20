@@ -11,7 +11,7 @@ module.exports = {
         model: "text-davinci-003",
         prompt: request,
         temperature: 0,
-        max_tokens: 200,
+        max_tokens: 300,
       })
 
       return response.data.choices[0].text.split('\n\n')[1]
