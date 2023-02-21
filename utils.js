@@ -5,7 +5,7 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration)
 
 module.exports = {
-  response: async request => {
+  createText: async request => {
     try {
       const response = await openai.createCompletion({
         model: "text-davinci-003",
@@ -17,6 +17,19 @@ module.exports = {
       return response.data.choices[0].text.split('\n\n')[1]
     } catch (err) {
       return err
-    }    
+    }
+  },
+  createImage: async request => {
+    try {
+      const response = await openai.createImage({
+        prompt: request,
+        n: 1,
+        size: "1024x1024",
+      })
+
+      return response.data.data[0].url
+    } catch (err) {
+      return err
+    }
   }
 }
