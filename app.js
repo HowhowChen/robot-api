@@ -29,7 +29,7 @@ bot.on('message', async event => {
 
       // 呼叫OPENAI API
       const replyMsg = await createText(newText)
-      event.reply(replyMsg)
+      event.reply({ type: 'text', text: replyMsg })
         .then(data => {
           // 當訊息成功回傳後的處理
         })
