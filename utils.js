@@ -10,8 +10,8 @@ module.exports = {
       const response = await openai.createCompletion({
         model: "text-davinci-003",
         prompt: request,
-        temperature: 0.9,
-        max_tokens: 160,
+        temperature: 0,
+        max_tokens: 250,
         frequency_penalty: 0,
         presence_penalty: 0.6,
         stop: ['AI:', 'Human:']
