@@ -9,6 +9,7 @@ const bot = linebot({
   channelSecret: process.env.CHANNEL_SECRET,
   channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN
 })
+let timeStamp = 0 // 計數器
 
 // 當有人傳送訊息給Bot時
 bot.on('message', async event => {
@@ -65,6 +66,14 @@ bot.on('message', async event => {
         break
     */
     case 'G':
+      timeStamp += 1
+      if (timeStamp >= 20) {
+        // 刪除歷史紀錄,計數器歸零
+        timeStamp = 0
+        event.reply({ type: 'text', text: await deleteMessage() })
+        return
+      }
+
       //  扣除陣列中字首
       textArr.splice(0, 1)
 
@@ -73,7 +82,7 @@ bot.on('message', async event => {
 
       // 呼叫OPENAI API
       const replyChat = await createChat(newText)
-
+      
       event.reply({ type: 'text', text: replyChat })
         .then(data => {
           // 當訊息成功回傳後的處理
