@@ -3,6 +3,7 @@ const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 })
 const openai = new OpenAIApi(configuration)
+const messages = []
 
 module.exports = {
   createText: async request => {
@@ -31,6 +32,32 @@ module.exports = {
       })
 
       return response.data.data[0].url
+    } catch (err) {
+      return err
+    }
+  },
+  createChat: async request => {
+    try {
+      messages.push({
+        'role': 'user',
+        'content': request
+      })
+      const response = await openai.createChatCompletion({
+        model: "gpt-3.5-turbo",
+        messages,
+        temperature: 0.6
+      })
+      messages.push(response.data.choices[0].message)
+
+      return response.data.choices[0].message.content.trim()
+    } catch (err) {
+      return err
+    }
+  },
+  deleteMessage: () => {
+    try {
+      messages.splice(0, messages.length)
+      return 'clear your all messages history!'
     } catch (err) {
       return err
     }
