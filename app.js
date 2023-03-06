@@ -3,7 +3,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 const port = process.env.PORT || 3000
 const linebot = require('linebot');
-const { createText, createImage, createChat, deleteMessage } = require('./utils');
+const { createText, createImage, createChat, deleteMessage, locationSearch } = require('./utils');
 const bot = linebot({
   channelId: process.env.CHANNEL_ID,
   channelSecret: process.env.CHANNEL_SECRET,
@@ -92,8 +92,8 @@ bot.on('message', async event => {
           console.log(error)
         })
       break
+    // 刪除歷史紀錄
     case 'D':
-      // 刪除歷史紀錄
       const deleteMsg = await deleteMessage()
 
       event.reply({ type: 'text', text: deleteMsg })
@@ -105,6 +105,26 @@ bot.on('message', async event => {
           console.log(error)
         })
       break
+    //  google search
+    case 'S':
+      //  扣除陣列中字首
+      textArr.splice(0, 1)
+
+      // 展開陣列並去除空白
+      newText = textArr.join('').trim()
+      
+      // 呼叫Google search api
+      const locations = await locationSearch(newText)
+      const locationsObject = locations.map(location => ({
+        type: 'location',
+        title: location.title,
+        address: location.address,
+        latitude: location.gps_coordinates.latitude,
+        longitude: location.gps_coordinates.longitude
+      }))
+
+      // send message
+      event.reply(locationsObject)
     default:
       return
   }

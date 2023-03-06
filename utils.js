@@ -1,3 +1,8 @@
+// Google Search
+const SerpApi = require('google-search-results-nodejs')
+const search = new SerpApi.GoogleSearch(process.env.SERPAPI_API_KEY)
+
+// OpenAI
 const { Configuration, OpenAIApi } = require('openai')
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -58,6 +63,27 @@ module.exports = {
     try {
       messages.splice(0, messages.length)
       return 'clear your all messages history!'
+    } catch (err) {
+      return err
+    }
+  },
+  locationSearch: async request => {
+    try {
+      const params = {
+        q: request,
+        location: "taiwan",
+        tbm: "lcl"
+      }
+      
+      const locations = new Promise((resolve, reject) => {
+        search.json(params, data => {
+          //  按評價高低排序
+          data["local_results"].sort((a, b) => b.rating - a.rating)
+          resolve(data["local_results"].slice(0, 5))
+        })
+      })
+
+      return await locations
     } catch (err) {
       return err
     }
