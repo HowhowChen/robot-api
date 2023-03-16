@@ -87,5 +87,24 @@ module.exports = {
     } catch (err) {
       return err
     }
+  },
+  imageSearch: async request => {
+    try {
+      
+      const params = {
+        q: request,
+        tbm: 'isch'
+      }
+
+      const images = new Promise((resolve, reject) => {
+        search.json(params, data => {
+          resolve(data["images_results"].slice(0, 5))
+        })
+      })
+
+      return await images
+    } catch (err) {
+      return err
+    }
   }
 }

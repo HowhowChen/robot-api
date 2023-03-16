@@ -3,7 +3,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 const port = process.env.PORT || 3000
 const linebot = require('linebot');
-const { createText, createImage, createChat, deleteMessage, locationSearch } = require('./utils');
+const { createText, createImage, createChat, deleteMessage, locationSearch, imageSearch } = require('./utils');
 const bot = linebot({
   channelId: process.env.CHANNEL_ID,
   channelSecret: process.env.CHANNEL_SECRET,
@@ -127,6 +127,35 @@ bot.on('message', async event => {
       event.reply(locationsObject)
     default:
       return
+    //  google image
+    case 'm':
+      //  扣除陣列中字首
+      textArr.splice(0, 1)
+
+      // 展開陣列並去除空白
+      newText = textArr.join('').trim()
+
+      const images = await imageSearch(newText)
+      const imageObject = images.map(image => ({
+        thumbnailImageUrl: image.original,
+            title: image.source.slice(0, 29),
+            text: image.title.slice(0, 50) + '...',
+            actions: [{
+              type: 'uri',
+              label: 'View detail',
+              uri: image.link
+            }]
+      }))
+
+      // send message
+      event.reply({
+        type: 'template',
+        altText: 'this is a carousel template',
+        template: {
+          type: 'carousel',
+          columns: imageObject
+        }
+      })   
   }
 })
 
