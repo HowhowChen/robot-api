@@ -128,7 +128,7 @@ bot.on('message', async event => {
     default:
       return
     //  google image
-    case 'm':
+    case 'M':
       //  扣除陣列中字首
       textArr.splice(0, 1)
 
